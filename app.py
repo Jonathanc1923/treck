@@ -11,7 +11,7 @@ from flask import session
 from collections import defaultdict
 
 model_dir = os.path.join('archivos')
-app_insightface = insightface.app.FaceAnalysis(name="buffalo_l", model_dir=model_dir, download=False, download_zip=False)
+
 
 
 
@@ -31,10 +31,10 @@ model_dir = os.path.join('archivos')
 # Crear una instancia de FaceAnalysis y evitar la descarga automática del modelo
 
 
-swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
+swapper = insightface.model_zoo.get_model("inswapper_128.onnx")
 
 # Preparar la instancia de FaceAnalysis
-app_insightface.prepare(ctx_id=0, det_size=(640, 640))
+
 
 
 
@@ -135,18 +135,22 @@ def construir_imfondo(imagefilename):
 
 
 
-
+@app.route('/select_image', methods=['POST'])
 def select_image():
     global a
     
-    root = Tk()
+    if 'file' not in request.files:
+        return redirect(request.url)
     
-    root.withdraw()
-    root.attributes('-topmost', True)  # Establece la ventana en la parte superior
-    file_path = filedialog.askopenfilename(title="Seleccionar imagen", filetypes=[("Archivos de imagen", "*.jpg;*.png;*.jpeg;*.JPEG;")])
-    root.destroy()
+    file = request.files['file']
     
-    return file_path
+    if file.filename == '':
+        return redirect(request.url)
+    
+    # Aquí puedes procesar el archivo como lo hacías anteriormente
+    # file.save('ruta/del/almacenamiento/' + secure_filename(file.filename))
+    
+    return 'Archivo cargado con éxito!'
 
 
 @app.route('/check_a')
