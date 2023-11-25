@@ -25,7 +25,10 @@ print("insightface", insightface.__version__)
 
 model_dir = os.path.join('archivos')
 
-
+# Crear una instancia de FaceAnalysis y evitar la descarga automática del modelo
+app_insightface = insightface.app.FaceAnalysis(name="buffalo_l", model_dir=model_dir, download=False, download_zip=False)
+app_insightface.prepare(ctx_id=0, det_size=(640, 640))
+swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
 
 
 
@@ -299,10 +302,7 @@ from datetime import datetime
 @app.route('/procesar', methods=['POST'])
 def procesar():
     global unique_name, result_image
-    # Crear una instancia de FaceAnalysis y evitar la descarga automática del modelo
-    app_insightface = insightface.app.FaceAnalysis(name="buffalo_l", model_dir=model_dir, download=False)
-    app_insightface.prepare(ctx_id=0, det_size=(640, 640))
-    swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
+    
 
     data = request.get_json()
     imagefilename_from_form = data.get('imagefilename', '')
