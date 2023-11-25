@@ -12,14 +12,17 @@ from collections import defaultdict
 
 model_dir = os.path.join('archivos')
 app_insightface = insightface.app.FaceAnalysis(name="buffalo_l", model_dir=model_dir, download=False, download_zip=False)
-user_ip = request.remote_addr if request and request.remote_addr else "unknown_ip"
 
+
+
+
+app = Flask(__name__)
+user_ip = request.remote_addr if request and request.remote_addr else "unknown_ip"
 
 unique_name = None
 result_image = None
 a = 1
 b = ""
-app = Flask(__name__)
 
 print("insightface", insightface.__version__)
 
