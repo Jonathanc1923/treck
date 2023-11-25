@@ -31,7 +31,7 @@ model_dir = os.path.join('archivos')
 # Crear una instancia de FaceAnalysis y evitar la descarga automática del modelo
 
 
-swapper = insightface.model_zoo.get_model("inswapper_128.onnx")
+
 
 # Preparar la instancia de FaceAnalysis
 
@@ -312,7 +312,8 @@ from datetime import datetime
 @app.route('/procesar', methods=['POST'])
 def procesar():
     global unique_name, result_image
-    
+    swapper = insightface.model_zoo.get_model("inswapper_128.onnx")
+    app_insightface =  swapper
 
     data = request.get_json()
     imagefilename_from_form = data.get('imagefilename', '')
