@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file
 import cv2
 import insightface
+import shutil
 import os
 from flask import jsonify
 from tkinter import Tk, filedialog
@@ -10,31 +11,25 @@ import random
 from flask import session
 from collections import defaultdict
 
-model_dir = os.path.join('archivos')
 
 
-
-
-
-app = Flask(__name__)
 user_ip = request.remote_addr if request and request.remote_addr else "unknown_ip"
+
 
 unique_name = None
 result_image = None
 a = 1
 b = ""
+app = Flask(__name__)
 
 print("insightface", insightface.__version__)
 
 model_dir = os.path.join('archivos')
 
 # Crear una instancia de FaceAnalysis y evitar la descarga automática del modelo
-
-
-
-
-# Preparar la instancia de FaceAnalysis
-
+app_insightface = insightface.app.FaceAnalysis(name="buffalo_l", model_dir=model_dir, download=False, download_zip=False)
+app_insightface.prepare(ctx_id=0, det_size=(640, 640))
+swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
 
 
 
@@ -84,7 +79,17 @@ lista_negra = defaultdict(int)
 @app.route('/validar_codigo/<codigo>', methods=['GET'])
 def validar_codigo(codigo):
     global codigos_validos, lista_negra
-
+    
+    user_ip = obtener_direccion_ip()
+    if os.path.join('uploads', user_ip):
+        # Si el directorio existe, lo eliminamos.
+        try:
+            shutil.rmtree(os.path.join('uploads', user_ip))
+            print(f"Carpeta eliminada exitosamente.")
+        except OSError as e:
+            print(f"No se pudo eliminar la carpeta . Error: {e}")
+    else:
+        print(f"La carpeta {os.path.join('uploads', user_ip)} no existe aun.")
     if codigo in codigos_validos:
         if codigos_validos[codigo] < limite_validaciones:
             # Incrementa el contador
@@ -137,20 +142,29 @@ def construir_imfondo(imagefilename):
 
 @app.route('/select_image', methods=['POST'])
 def select_image():
-    global a
+    global img_persona_path
     
     if 'file' not in request.files:
-        return redirect(request.url)
-    
+        return jsonify({'error': 'No se encontró ningún archivo'}), 400
+
     file = request.files['file']
-    
-    if file.filename == '':
-        return redirect(request.url)
-    
-    # Aquí puedes procesar el archivo como lo hacías anteriormente
-    # file.save('ruta/del/almacenamiento/' + secure_filename(file.filename))
-    
-    return 'Archivo cargado con éxito!'
+
+    # 1. Obtener la dirección IP del cliente
+    ip_address = request.remote_addr
+
+    # 2. Crear una subcarpeta con el nombre de la dirección IP si no existe
+    ip_folder_path = os.path.join("uploads", ip_address)
+    if not os.path.exists(ip_folder_path):
+        os.makedirs(ip_folder_path)
+
+    # 3. Guardar la imagen en la subcarpeta
+    img_persona_path = os.path.join(ip_folder_path, file.filename)
+    file.save(img_persona_path)
+    print("SE GUARDÓ EN", img_persona_path)
+
+    return img_persona_path
+
+
 
 
 @app.route('/check_a')
@@ -312,8 +326,7 @@ from datetime import datetime
 @app.route('/procesar', methods=['POST'])
 def procesar():
     global unique_name, result_image
-    swapper = insightface.model_zoo.get_model("inswapper_128.onnx")
-    app_insightface =  swapper
+    
 
     data = request.get_json()
     imagefilename_from_form = data.get('imagefilename', '')
@@ -329,18 +342,26 @@ def procesar():
         return jsonify({'status': 'error', 'message': 'Error al cargar la imagen'})
 
     faces = app_insightface.get(img)
-    
+    user_ip = obtener_direccion_ip()
     # Ordenar las caras por la posición del cuadro delimitador
     faces = sorted(faces, key=lambda x: x['bbox'][0])
 
     # Almacena los datos de los rostros en una lista
+    folder_path = os.path.join('uploads', user_ip)
+    file_names = os.listdir(folder_path)
     faces_data = []
-
+    
     for i, source_face in enumerate(faces):
         bbox = source_face["bbox"]
         bbox = [int(b) for b in bbox]
-        
-        img_persona_path = select_image()
+
+        # Si hay un archivo correspondiente en la carpeta, usa su información
+        if i < len(file_names):
+            file_name = file_names[i]
+            img_persona_path = os.path.join('uploads', user_ip, file_name)
+        else:
+            # En caso de que no haya suficientes archivos en la carpeta
+            img_persona_path = None
         
         # Almacena los datos del rostro actual en la lista faces_data
         current_face_data = {
@@ -361,7 +382,7 @@ def procesar():
         
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         random_number = str(random.randint(100000000, 999999999))
-        user_ip = obtener_direccion_ip()
+        
         print("Valor de user_ip:", user_ip)
         unique_name = f"output_image_{timestamp}_{random_number}_{user_ip}_{i}.jpg"
         print("Nombre de archivo único:", unique_name)

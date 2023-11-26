@@ -114,68 +114,38 @@
             .image-container img {
                 max-width: 90%;
             }
+            #video-container {
+                margin: 20px auto; /* Centrar el contenedor del video en todos los dispositivos */
+                overflow: hidden;
+                width: 70%;
+                max-width: 800px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+    
+            #youtube-video {
+                width: 100%;
+                height: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Professional Pic - Seleccione un estilo para su fotografía</h1>
+    <h1>IMPORTANTE: Vea el siguiente video explicativo</h1>
+    <div id="video-container">
+        <iframe
+            id="youtube-video"
+            width="500"
+            height="290"
+            src="https://www.youtube.com/embed/54aVNh78E8w"
+            frameborder="0"
+            allowfullscreen
+        ></iframe>
+    </div>
     <a href="{{ url_for('disenos_una_persona') }}">Diseños para 1 persona</a>
     <a href="{{ url_for('disenos_una_persona2') }}">Diseños para 2 personas</a>
     <a href="{{ url_for('disenos_una_persona3') }}">Diseños para 3 personas</a>
     <a href="{{ url_for('disenos_una_persona4') }}">Diseños para 4 personas</a>
     <a href="{{ url_for('disenos_una_persona5') }}">Diseños para 5 personas</a>
-
-    <!-- Agrega una sección para las imágenes que aparecerán y desaparecerán -->
-    <div class="image-container" id="imageContainer"></div>
-
-    <script>
-        // JavaScript para mostrar y ocultar imágenes de forma aleatoria
-        document.addEventListener("DOMContentLoaded", function () {
-            var imageContainer = document.getElementById("imageContainer");
-
-            // Obtener la lista de imágenes desde el servidor Flask
-            fetch('{{ url_for("static_images") }}')
-                .then(response => response.json())
-                .then(data => {
-                    var images = data.files;
-
-                    images.forEach(function (imageName) {
-                        var img = document.createElement("img");
-                        img.src = "{{ url_for('static', filename='estilos') }}/" + imageName;
-                        img.alt = "Image " + imageName;
-                        img.classList.add("hidden", "fade-in-out");
-                        imageContainer.appendChild(img);
-                    });
-
-                    setInterval(function () {
-                        // Oculta todas las imágenes
-                        images.forEach(function (imageName) {
-                            var img = document.querySelector(`[alt="Image ${imageName}"]`);
-                            img.classList.add("hidden");
-                        });
-
-                        // Muestra varias imágenes aleatorias
-                        var randomIndexes = getUniqueRandomIndexes(images.length, 4);
-                        randomIndexes.forEach(function (index) {
-                            var imageName = images[index];
-                            var img = document.querySelector(`[alt="Image ${imageName}"]`);
-                            img.classList.remove("hidden");
-                        });
-                    }, 1000); // Cambia la duración según lo rápido que desees que aparezcan y desaparezcan las imágenes
-                })
-                .catch(error => console.error('Error al cargar las imágenes:', error));
-
-            function getUniqueRandomIndexes(max, count) {
-                var indexes = [];
-                while (indexes.length < count) {
-                    var randomIndex = Math.floor(Math.random() * max);
-                    if (!indexes.includes(randomIndex)) {
-                        indexes.push(randomIndex);
-                    }
-                }
-                return indexes;
-            }
-        });
-    </script>
 </body>
 </html>
