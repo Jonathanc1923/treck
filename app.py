@@ -10,11 +10,12 @@ from datetime import datetime
 import random
 from flask import session
 from collections import defaultdict
+import string
 
 
 
-user_ip = request.remote_addr if request and request.remote_addr else "unknown_ip"
 
+codigouser = None
 
 unique_name = None
 result_image = None
@@ -28,13 +29,26 @@ print("insightface", insightface.__version__)
 # Define la ruta al directorio de modelos buffalo_l
 model_dir = os.path.join('archivos', '.insightface', 'models', 'buffalo_l')
 os.environ['INSIGHTFACE_HOME'] = model_dir
-
+model_dir = os.path.join('archivos')
 # Crea una instancia de FaceAnalysis y evita la descarga automática del modelo
-app_insightface = insightface.app.FaceAnalysis(BASE_REPO_URL = None, download=False, download_zip=False, model_dir=model_dir, name="buffalo_l")
+app_insightface = insightface.app.FaceAnalysis(name="buffalo_l", model_dir=model_dir, download=False, download_zip=False)
 app_insightface.prepare(ctx_id=0, det_size=(640, 640))
 swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
 
 
+def generarnumero():
+    global codigouser
+    # Generar 3 números aleatorios
+    numeros = ''.join(random.choices(string.digits, k=3))
+
+    # Generar 4 letras aleatorias
+    letras = ''.join(random.choices(string.ascii_uppercase, k=4))
+
+    # Mezclar números y letras
+    codigouser = ''.join(random.sample(numeros + letras, k=7))
+    print ("CODIGOUSER", codigouser)
+
+    return codigouser
 
 
 #############################################################
@@ -82,18 +96,19 @@ lista_negra = defaultdict(int)
 
 @app.route('/validar_codigo/<codigo>', methods=['GET'])
 def validar_codigo(codigo):
-    global codigos_validos, lista_negra
+    global codigos_validos, lista_negra, codigouser
     
-    user_ip = obtener_direccion_ip()
-    if os.path.join('uploads', user_ip):
+    codigouser = generarnumero()
+    print ("MI CODIGOUSER ES", codigouser)
+    if os.path.join('uploads', codigouser):
         # Si el directorio existe, lo eliminamos.
         try:
-            shutil.rmtree(os.path.join('uploads', user_ip))
+            shutil.rmtree(os.path.join('uploads', codigouser))
             print(f"Carpeta eliminada exitosamente.")
         except OSError as e:
             print(f"No se pudo eliminar la carpeta . Error: {e}")
     else:
-        print(f"La carpeta {os.path.join('uploads', user_ip)} no existe aun.")
+        print(f"La carpeta {os.path.join('uploads', codigouser)} no existe aun.")
     if codigo in codigos_validos:
         if codigos_validos[codigo] < limite_validaciones:
             # Incrementa el contador
@@ -146,18 +161,18 @@ def construir_imfondo(imagefilename):
 
 @app.route('/select_image', methods=['POST'])
 def select_image():
-    global img_persona_path
+    global img_persona_path, codigouser
     
     if 'file' not in request.files:
         return jsonify({'error': 'No se encontró ningún archivo'}), 400
 
     file = request.files['file']
 
-    # 1. Obtener la dirección IP del cliente
-    ip_address = request.remote_addr
+    # 1. Obtener user del cliente
+    user_address = codigouser
 
     # 2. Crear una subcarpeta con el nombre de la dirección IP si no existe
-    ip_folder_path = os.path.join("uploads", ip_address)
+    ip_folder_path = os.path.join("uploads", user_address)
     if not os.path.exists(ip_folder_path):
         os.makedirs(ip_folder_path)
 
@@ -186,18 +201,16 @@ def seleccion():
     
     return redirect(url_for('seleccion_estilo'))
 
-def obtener_direccion_ip():
-    # Obtén la dirección IP del usuario desde la solicitud
-    return request.remote_addr
+
 
 @app.route('/imagen_final', methods=['GET'])
 def imagen_final():
-    global a
+    global a, codigouser
     a = 1
     global unique_name, result_image
     
     # Obtén la dirección IP del usuario
-    user_ip = obtener_direccion_ip()
+    user_ip = codigouser
 
     # Comprueba si unique_name contiene user_ip como parte de su nombre
     if user_ip in unique_name:
@@ -329,7 +342,7 @@ def disenos_una_persona5():
 from datetime import datetime
 @app.route('/procesar', methods=['POST'])
 def procesar():
-    global unique_name, result_image
+    global unique_name, result_image, codigouser
     
 
     data = request.get_json()
@@ -346,7 +359,7 @@ def procesar():
         return jsonify({'status': 'error', 'message': 'Error al cargar la imagen'})
 
     faces = app_insightface.get(img)
-    user_ip = obtener_direccion_ip()
+    user_ip = codigouser
     # Ordenar las caras por la posición del cuadro delimitador
     faces = sorted(faces, key=lambda x: x['bbox'][0])
 
@@ -392,9 +405,12 @@ def procesar():
         print("Nombre de archivo único:", unique_name)
         output_path = os.path.join('static', unique_name)
         cv2.imwrite(output_path, img)
+        
 
     # Devuelve la última imagen generada como resultado
     result_image = output_path
+    shutil.rmtree(os.path.join('uploads', codigouser))
+    print(f"Carpeta eliminada exitosamente.")
     
 
     # Pasar la variable unique_number al template
