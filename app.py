@@ -27,7 +27,7 @@ print("insightface", insightface.__version__)
 model_dir = os.path.join('archivos')
 
 # Crear una instancia de FaceAnalysis y evitar la descarga automática del modelo
-app_insightface = insightface.app.FaceAnalysis(download=False, download_zip=False, name="buffalo_l", model_dir=model_dir)
+app_insightface = insightface.app.FaceAnalysis(download=False, download_zip=False, model_dir=model_dir, name="buffalo_l")
 app_insightface.prepare(ctx_id=0, det_size=(640, 640))
 swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, download_zip=False)
 
