@@ -10,6 +10,7 @@ from datetime import datetime
 import random
 from flask import session
 from collections import defaultdict
+from pathlib import Path
 import string
 
 
@@ -135,6 +136,29 @@ def validar_codigo(codigo):
 
 ##########################################################################
 
+def rename_images():
+    global codigouser
+    # Obtén la lista de archivos en la carpeta
+    ip_folder_path = os.path.join("uploads", codigouser)
+    files = os.listdir(ip_folder_path)
+
+    # Filtra solo los archivos de imagen (puedes ajustar las extensiones según tus necesidades)
+    image_files = [f for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
+    # Ordena los archivos por fecha de creación
+    image_files.sort(key=lambda x: os.path.getctime(os.path.join(ip_folder_path, x)))
+
+    # Recorre la lista de archivos y renombra cada uno con un número
+    for i, file_name in enumerate(image_files, start=1):
+        file_path = os.path.join(ip_folder_path, file_name)
+        new_name = f"{i}{Path(file_name).suffix}"  # Nuevo nombre con número de orden y extensión
+        new_path = os.path.join(ip_folder_path, new_name)
+        os.rename(file_path, new_path)
+        
+
+
+
+
 
 
 @app.route('/static_images')
@@ -161,7 +185,7 @@ def construir_imfondo(imagefilename):
 
 @app.route('/select_image', methods=['POST'])
 def select_image():
-    global img_persona_path, codigouser
+    global img_persona_path, codigouser, ip_folder_path
     
     if 'file' not in request.files:
         return jsonify({'error': 'No se encontró ningún archivo'}), 400
@@ -205,9 +229,9 @@ def seleccion():
 
 @app.route('/imagen_final', methods=['GET'])
 def imagen_final():
-    global a, codigouser
+    global a, codigouser, unique_name, result_image
     a = 1
-    global unique_name, result_image
+  
     
     # Obtén la dirección IP del usuario
     user_ip = codigouser
@@ -344,7 +368,7 @@ from datetime import datetime
 def procesar():
     global unique_name, result_image, codigouser
     
-
+    rename_images()
     data = request.get_json()
     imagefilename_from_form = data.get('imagefilename', '')
     
@@ -405,6 +429,7 @@ def procesar():
         print("Nombre de archivo único:", unique_name)
         output_path = os.path.join('static', unique_name)
         cv2.imwrite(output_path, img)
+        print("UNIQUE NAME ES", unique_name)
         
 
     # Devuelve la última imagen generada como resultado
