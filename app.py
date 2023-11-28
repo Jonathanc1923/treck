@@ -3,6 +3,8 @@ import cv2
 import insightface
 import shutil
 import os
+from os import listdir
+from os.path import isfile, join
 from flask import jsonify
 from tkinter import Tk, filedialog
 import tempfile
@@ -12,18 +14,19 @@ from flask import session
 from collections import defaultdict
 from pathlib import Path
 import string
+import secrets
+from datetime import datetime
 
 
-
-
+app = Flask(__name__)
 codigouser = None
 
-unique_name = None
-result_image = None
+
+
 a = 1
 b = ""
-app = Flask(__name__)
 
+app.secret_key = secrets.token_hex(16)
 print("insightface", insightface.__version__)
 
 
@@ -39,6 +42,7 @@ swapper = insightface.model_zoo.get_model("inswapper_128.onnx", download=False, 
 
 def generarnumero():
     global codigouser
+    
     # Generar 3 números aleatorios
     numeros = ''.join(random.choices(string.digits, k=3))
 
@@ -48,6 +52,7 @@ def generarnumero():
     # Mezclar números y letras
     codigouser = ''.join(random.sample(numeros + letras, k=7))
     print ("CODIGOUSER", codigouser)
+    
 
     return codigouser
 
@@ -59,37 +64,15 @@ codigos_validos = {
     'a1b2c3d': 0, 'e4f5g6h': 0, 'i7j8k9l': 0, 'm0n1o2p': 0, 'q3r4s5t': 0, 'u6v7w8x': 0, 'y9z0a1b': 0, 'c2d3e4f': 0, 'g5h6i7j': 0, 'k8l9m0n': 0,
     'o1p2q3r': 0, 's4t5u6v': 0, 'w7x8y9z': 0, '0a1b2c3': 0, 'd4e5f6g': 0, 'h7i8j9k': 0, 'lmn0opq': 0, 'rstu1vw': 0, 'xyz234a': 0, 'bcd567e': 0,
     'fgh89ij': 0, 'klmnopq': 0, 'rstuvwx': 0, 'yz01234': 0, '56789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0,
-    'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0,
-    'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0,
-    'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0,
-    '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0,
-    'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0,
-    'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0,
-    'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0,
-    '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0,
-    '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0,
-    'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0,
-    'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0,
-    'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0,
-    '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0,
-    'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0,
-    'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0,
-    'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0,
-    '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0,
-    '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0,
-    'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0,
-    'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0,
-    'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0,
-    '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0,
-    'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0,
-    'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0,
-    'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0,
-    '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0,
-    '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0,
-    'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0,
-    'opqrstuv': 0, 'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0,
-    'wxyz0123': 0, '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0, 'ghijklmn': 0, 'opqrstuv': 0, 'wxyz0123': 0,
-    '456789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0}
+    'stuvwxyz': 0, '8a3bhfiw': 0, 'smk7p0q2': 0, 'r1lv6nfd': 0, 'x5ztpyeo': 0, '6r7bfi9t': 0,
+  '3apjk78v': 0, 'b2wt7iln': 0, 'xqdv1y4e': 0, 'f8kz09ps': 0, '2lwy9onk': 0,
+  'j3zqxl8k': 0, 'd5h1o9qs': 0, '4g6tjyma': 0, 'c2h4w1vb': 0, '3dn9se2w': 0,
+  'x8nby5k2': 0, 't74brj6s': 0, 'fvq94g1d': 0, 'xhjw5nqz': 0, '0lg6n1ft': 0,
+  'vdhn45mi': 0, 'ql0w6vtz': 0, 'syb9nkg2': 0, 'm8cgl7fd': 0, 'vns9c5jr': 0,
+  '5hql9evj': 0, 'c61s2frz': 0, '2wkxgjfq': 0, 'p6jot3aw': 0, 'q45kihfy': 0,
+  'ek42g5ms': 0, '1l5b7srw': 0, 'dj2kpg3i': 0, '45k9sjmw': 0, 'ztiq6yxk': 0,
+  'ofvjyxwi': 0, 'mld1azp7': 0, '8x4g2zvp': 0, 'fbtlm9xq': 0, 'n5i0yohp': 0,
+  'e0yjzt8p': 0, 'gsi1zrwf': 0,}
 limite_validaciones = 11  # Establece el límite de validaciones permitidas
 
 # Diccionario para almacenar la lista negra de códigos
@@ -97,10 +80,12 @@ lista_negra = defaultdict(int)
 
 @app.route('/validar_codigo/<codigo>', methods=['GET'])
 def validar_codigo(codigo):
-    global codigos_validos, lista_negra, codigouser
-    
+    global codigos_validos, lista_negra
+
     codigouser = generarnumero()
     print ("MI CODIGOUSER ES", codigouser)
+    session['user'] = codigouser
+    session['codigouser'] = codigouser
     if os.path.join('uploads', codigouser):
         # Si el directorio existe, lo eliminamos.
         try:
@@ -137,9 +122,12 @@ def validar_codigo(codigo):
 ##########################################################################
 
 def rename_images():
-    global codigouser
+    
+    
+    codigouser = session['codigouser']
     # Obtén la lista de archivos en la carpeta
     ip_folder_path = os.path.join("uploads", codigouser)
+    ip_folder_path = session['ip_folder_path']
     files = os.listdir(ip_folder_path)
 
     # Filtra solo los archivos de imagen (puedes ajustar las extensiones según tus necesidades)
@@ -185,28 +173,35 @@ def construir_imfondo(imagefilename):
 
 @app.route('/select_image', methods=['POST'])
 def select_image():
-    global img_persona_path, codigouser, ip_folder_path
     
-    if 'file' not in request.files:
-        return jsonify({'error': 'No se encontró ningún archivo'}), 400
+    
+    codigouser = session['codigouser']
+    if 'user' in session:
+    
+        if 'file' not in request.files:
+            return jsonify({'error': 'No se encontró ningún archivo'}), 400
 
-    file = request.files['file']
+        file = request.files['file']
 
-    # 1. Obtener user del cliente
-    user_address = codigouser
+        # 1. Obtener user del cliente
+        user_address = codigouser
 
-    # 2. Crear una subcarpeta con el nombre de la dirección IP si no existe
-    ip_folder_path = os.path.join("uploads", user_address)
-    if not os.path.exists(ip_folder_path):
-        os.makedirs(ip_folder_path)
+        # 2. Crear una subcarpeta con el nombre de la dirección IP si no existe
+        ip_folder_path = os.path.join("uploads", user_address)
+        session['ip_folder_path'] = ip_folder_path
+        if not os.path.exists(ip_folder_path):
+            os.makedirs(ip_folder_path)
 
-    # 3. Guardar la imagen en la subcarpeta
-    img_persona_path = os.path.join(ip_folder_path, file.filename)
-    file.save(img_persona_path)
-    print("SE GUARDÓ EN", img_persona_path)
-
-    return img_persona_path
-
+        # 3. Guardar la imagen en la subcarpeta
+        img_persona_path = os.path.join(ip_folder_path, file.filename)
+        file.save(img_persona_path)
+        print("SE GUARDÓ EN", img_persona_path)
+        session['img_persona_path'] = img_persona_path
+    
+        return img_persona_path
+    else:
+        # El usuario no ha iniciado sesión, redirige al formulario de inicio de sesión
+        return redirect(url_for('seleccion_estilo'))
 
 
 
@@ -227,21 +222,51 @@ def seleccion():
 
 
 
+
+
+
+
+
 @app.route('/imagen_final', methods=['GET'])
 def imagen_final():
-    global a, codigouser, unique_name, result_image
+    global a, unique_name, result_image
     a = 1
-  
-    
+    codigouser = session['codigouser']
+
     # Obtén la dirección IP del usuario
     user_ip = codigouser
 
-    # Comprueba si unique_name contiene user_ip como parte de su nombre
-    if user_ip in unique_name:
-        return render_template('imagen_final.html', result_image=unique_name)
-    else:
-        return "Error: Acceso no autorizado"
+    # Obtiene la lista de archivos en el directorio 'static'
+    static_dir = 'static'
+    files = [f for f in listdir(static_dir) if isfile(join(static_dir, f))]
 
+    # Filtra los archivos que contienen el valor de 'user_ip'
+    filtered_files = [f for f in files if user_ip in f]
+
+    # Ordena la lista de archivos por fecha de modificación
+    filtered_files.sort(key=lambda x: os.path.getmtime(os.path.join(static_dir, x)))
+
+    # Toma el archivo más reciente de la lista (si hay alguno)
+    if filtered_files:
+        latest_file = filtered_files[-1]
+        result_image_name = latest_file  # Solo el nombre del archivo
+        result_image = os.path.join(static_dir, latest_file)
+        return render_template('imagen_final.html', result_image=result_image_name)
+    else:
+        return "Error: No se encontraron imágenes para mostrar"
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -270,8 +295,9 @@ def index():
         else:
             result_image_path = None
         imagen_final
-        
-        return render_template('index.html', result_image=result_image_path,a=a)
+        result_image=result_image_path
+        session["result_image"] = result_image
+        return render_template('index.html' ,a=a)
 
     # Lógica para manejar solicitudes GET
     imagefilename = str(request.args.get('imagefilename', ''))
@@ -363,20 +389,31 @@ def disenos_una_persona5():
 
 
 
-from datetime import datetime
+
 @app.route('/procesar', methods=['POST'])
 def procesar():
-    global unique_name, result_image, codigouser
+    global unique_name
+    codigouser = session['codigouser']
     
     rename_images()
     data = request.get_json()
     imagefilename_from_form = data.get('imagefilename', '')
     
     imfondo_path = construir_imfondo(imagefilename_from_form)
-
+    carpeta_destino = os.path.join("uploads", codigouser)
     print("Ruta de la imagen de fondo:", imfondo_path)
 
-    img = cv2.imread(imfondo_path)
+    nombre_deseado = "imagenfondo"
+    nombre_archivo = os.path.basename(imfondo_path)
+    ruta_destino = os.path.join(carpeta_destino, f"{nombre_deseado}.txt")
+    
+    
+    shutil.copy2(imfondo_path, ruta_destino)
+    
+    
+    
+    
+    img = cv2.imread(ruta_destino)
 
     if img is None:
         print("Error al cargar la imagen.")
@@ -426,20 +463,31 @@ def procesar():
         
         print("Valor de user_ip:", user_ip)
         unique_name = f"output_image_{timestamp}_{random_number}_{user_ip}_{i}.jpg"
+        
+        
         print("Nombre de archivo único:", unique_name)
         output_path = os.path.join('static', unique_name)
+        
+    
+        
         cv2.imwrite(output_path, img)
         print("UNIQUE NAME ES", unique_name)
-        
+        print(session)
+    
 
     # Devuelve la última imagen generada como resultado
+    unique_name = unique_name
+    print ("dasdasfavaa", unique_name)
     result_image = output_path
+    session['unique_name'] = unique_name
+    session["result_image"] = result_image
     shutil.rmtree(os.path.join('uploads', codigouser))
     print(f"Carpeta eliminada exitosamente.")
+    print(session)
     
 
     # Pasar la variable unique_number al template
-    return render_template('imagen_final.html', result_image=result_image, unique_number=unique_name)
+    return render_template('imagen_final.html', result_image=unique_name, unique_name=unique_name)
 
 
 
