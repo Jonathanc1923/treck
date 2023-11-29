@@ -72,8 +72,28 @@ codigos_validos = {
   '5hql9evj': 0, 'c61s2frz': 0, '2wkxgjfq': 0, 'p6jot3aw': 0, 'q45kihfy': 0,
   'ek42g5ms': 0, '1l5b7srw': 0, 'dj2kpg3i': 0, '45k9sjmw': 0, 'ztiq6yxk': 0,
   'ofvjyxwi': 0, 'mld1azp7': 0, '8x4g2zvp': 0, 'fbtlm9xq': 0, 'n5i0yohp': 0,
-  'e0yjzt8p': 0, 'gsi1zrwf': 0,}
-limite_validaciones = 11  # Establece el límite de validaciones permitidas
+  'e0yjzt8p': 0, 'gsi1zrwf': 0,
+  'dAGQ9iBe': 0, '9xSYtjYA': 0, 'rn09iIz6': 0, 'JyZ5XgNW': 0, 'K0BfbkQq': 0,
+  'LgQoTiDd': 0, 'eYraplTb': 0, 'JKfogLmI': 0, 'zJqnxZur': 0, 'zyGAY3LD': 0,
+  'LsZQ2P5x': 0, 'XLSV6Bcr': 0, '4MyM9D0c': 0, 'K7zysqgv': 0, '11ZjruqS': 0,
+  'gshEhniS': 0, 'RchTGlgY': 0, 'vQgxJGyN': 0, 'PmqwSyIq': 0, 'xxHTM9v3': 0,
+  'SDX9O9xj': 0, '8BRsgXHY': 0, 'HhIgKMyo': 0, 'WdSh516h': 0, 'xJSlepn6': 0,
+  'P4GwEJZ3': 0, 'lpYDpXOw': 0, 'hXgWRdQA': 0, 'NHBRMHKM': 0, '3r8o0QRH': 0,
+  'XG6nF87E': 0, '9KeAMnDn': 0, 'uAVGBNuG': 0, 'IAS3Ocyx': 0, '8R0acJIf': 0,
+  'svif0syb': 0, 'jk4XRc3V': 0, 'wrRKuxyp': 0, 'i1eReTxw': 0, 'yFcmAOpr': 0,
+  'rHACaa3T': 0, 'foIly2y0': 0, 'NzWJSx32': 0, 'XaPoN1jw': 0, 'RiPet1VT': 0,
+  'ymUCGUTm': 0, 'n4RQTvXN': 0, '4CMXTlrG': 0, 'F6pTWfhF': 0, 'bCKBUrl3': 0,
+  'Fxh85mFL': 0, 'rgfX8dMB': 0, 'HKuYB9Ly': 0, 'qm1jmQPC': 0, 'Lulb7QED': 0,
+  'QTWOcg9m': 0, 'w9FShtZ0': 0, 'fC3DCkuF': 0, 'IrCtV56n': 0, 'Y9bOefeT': 0,
+  'WJdcnVva': 0, 'cA3yRuhY': 0, 'Po2QHdGI': 0, '5I32xi7r': 0, 'mZVEposs': 0,
+  'kIXdgJkv': 0, 'n6FRO43g': 0, 'tga53Hqi': 0, 'bb8CEKVC': 0, 'P1pQUMee': 0,
+  'QkAiAqId': 0, '8JY6tbBz': 0, 'K2RkrBzv': 0, 'wgAxYLkj': 0, 'es3sMeC4': 0,
+  '24FdmQiH': 0, 's2GEMsto': 0, 'jYYrGXQF': 0, 'V7lWB5iP': 0, 'T5QnQtxY': 0,
+  'S1CRIW1g': 0, 'tiOh0GkL': 0, 'PoYks6GJ': 0, 'yRQBe1Gj': 0, 'Y87m8qZD': 0,
+  'gpCKcWRA': 0, 'XsvAnXeU': 0, 'HyOfzNEM': 0, '0mC6MJq5': 0, 'RKVi6Jpc': 0,
+  'qJIW2HVM': 0, 'V1tneUyL': 0, 'bhBInqJv': 0, 'JUCD8w4q': 0, 'zvcGqPJH': 0,
+  'RjtFcpUA': 0, 'YBrnkOHl': 0, 'CGVynMZ4': 0, 'fb5SiQbD': 0, 'cTGw4EMd': 0, "tefiteamo":-1000,}
+limite_validaciones = 16  # Establece el límite de validaciones permitidas
 
 # Diccionario para almacenar la lista negra de códigos
 lista_negra = defaultdict(int)
