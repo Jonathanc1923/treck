@@ -304,7 +304,9 @@ def index():
         # Lógica para manejar solicitudes POST
         imagefilename = request.form.get('imagefilename', '')
         print("Nombre de la imagen de fondo recibido en Flask:", imagefilename)
+        imfondo_path = session ["imafondo_path"]
         imfondo_path = construir_imfondo(imagefilename)
+        
         static_dir = os.path.join('static')
         image_files = [f for f in os.listdir(static_dir) if f.endswith(('.jpg', '.png', '.jpeg'))]
 
