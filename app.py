@@ -431,6 +431,7 @@ def procesar():
     
     imfondo_path = construir_imfondo(imagefilename_from_form)
     carpeta_destino = os.path.join("uploads", codigouser)
+    imfondo_path = session["imfondo_path"]
     print("Ruta de la imagen de fondo:", imfondo_path)
 
     nombre_deseado = "imagenfondo"
@@ -443,7 +444,7 @@ def procesar():
     
     
     
-    img = cv2.imread(ruta_destino)
+    img = cv2.imread(imfondo_path)
 
     if img is None:
         print("Error al cargar la imagen.")
