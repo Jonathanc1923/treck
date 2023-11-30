@@ -69,7 +69,7 @@
     {% if result_image %}
         <h2>Imagen Resultante:</h2>
         <div class="result-image-container">
-            <img class="result-image" src="{{ url_for('static', filename=result_image.split('static/')[1]) }}" alt="Result_image">
+            <img class="result-image" src="{{ url_for('static', codigouser=codigouser, filename=result_image_name) }}" alt="Result_image">
         </div>
     {% else %}
         <p>Espera 30 segundos antes de darle al botón</p>

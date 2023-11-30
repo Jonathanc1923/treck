@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, send_file
 import cv2
 import insightface
@@ -249,7 +250,7 @@ def seleccion():
 
 @app.route('/imagen_final', methods=['GET'])
 def imagen_final():
-    global a, unique_name, result_image
+    global a
     a = 1
     codigouser = session['codigouser']
 
@@ -412,7 +413,7 @@ def disenos_una_persona5():
 
 @app.route('/procesar', methods=['POST'])
 def procesar():
-    global unique_name
+    
     codigouser = session['codigouser']
     
     rename_images()
@@ -467,7 +468,9 @@ def procesar():
             'img_persona_path': img_persona_path
         }
         faces_data.append(current_face_data)
-
+    faces_data.sort(key=lambda x: x['source_face']['bbox'][0])
+    
+    
     # Procesa los datos almacenados para generar las imágenes finales
     for i, face_data in enumerate(faces_data):
         source_face = face_data['source_face']
@@ -514,3 +517,13 @@ def procesar():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
+
+
+
+
+
+
+
+
+
