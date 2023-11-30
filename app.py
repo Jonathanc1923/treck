@@ -16,6 +16,7 @@ from collections import defaultdict
 from pathlib import Path
 import string
 import secrets
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 
@@ -62,11 +63,7 @@ def generarnumero():
     
 # Diccionario para almacenar el número de veces que un código ha sido validado
 codigos_validos = {
-    'a1b2c3d': 0, 'e4f5g6h': 0, 'i7j8k9l': 0, 'm0n1o2p': 0, 'q3r4s5t': 0, 'u6v7w8x': 0, 'y9z0a1b': 0, 'c2d3e4f': 0, 'g5h6i7j': 0, 'k8l9m0n': 0,
-    'o1p2q3r': 0, 's4t5u6v': 0, 'w7x8y9z': 0, '0a1b2c3': 0, 'd4e5f6g': 0, 'h7i8j9k': 0, 'lmn0opq': 0, 'rstu1vw': 0, 'xyz234a': 0, 'bcd567e': 0,
-    'fgh89ij': 0, 'klmnopq': 0, 'rstuvwx': 0, 'yz01234': 0, '56789ab': 0, 'cdefghij': 0, 'klmnopqr': 0, 'stuvwxyz': 0, '01234567': 0, '89abcdef': 0,
-    'stuvwxyz': 0, '8a3bhfiw': 0, 'smk7p0q2': 0, 'r1lv6nfd': 0, 'x5ztpyeo': 0, '6r7bfi9t': 0,
-  '3apjk78v': 0, 'b2wt7iln': 0, 'xqdv1y4e': 0, 'f8kz09ps': 0, '2lwy9onk': 0,
+    
   'j3zqxl8k': 0, 'd5h1o9qs': 0, '4g6tjyma': 0, 'c2h4w1vb': 0, '3dn9se2w': 0,
   'x8nby5k2': 0, 't74brj6s': 0, 'fvq94g1d': 0, 'xhjw5nqz': 0, '0lg6n1ft': 0,
   'vdhn45mi': 0, 'ql0w6vtz': 0, 'syb9nkg2': 0, 'm8cgl7fd': 0, 'vns9c5jr': 0,
@@ -179,7 +176,7 @@ def static_images():
     return jsonify({'files': files})
 
 def construir_imfondo(imagefilename):
-    global b
+    b = session["b"]
     static_dir = os.path.join('static')
     # Construir la ruta de la imagen de fondo en el directorio 'grandes'
     imfondo_path = os.path.join(static_dir, b, 'grandes', imagefilename)
@@ -254,6 +251,7 @@ def seleccion():
 def imagen_final():
     global a
     a = 1
+    
     codigouser = session['codigouser']
 
     # Obtén la dirección IP del usuario
@@ -342,9 +340,9 @@ def seleccion_estilo():
 
 @app.route('/disenos_una_persona')
 def disenos_una_persona():
-    global b
+    
     b = "individuales"
-  
+    session["b"] = b
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "individuales", 'reducido')
     # Obtener la lista de nombres de archivos en la carpeta
@@ -357,9 +355,10 @@ def disenos_una_persona():
 
 @app.route('/disenos2personas')
 def disenos_una_persona2():
-    global b
+    
     
     b = "dobles"
+    session["b"] = b
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "dobles", 'reducido')
     # Obtener la lista de nombres de archivos en la carpeta
@@ -372,9 +371,10 @@ def disenos_una_persona2():
 
 @app.route('/disenos3personas')
 def disenos_una_persona3():
-    global b
+    
   
     b = "triples"
+    session["b"] = b
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "triples", 'reducido')
     # Obtener la lista de nombres de archivos en la carpeta
@@ -389,9 +389,10 @@ def disenos_una_persona3():
 
 @app.route('/disenos4personas')
 def disenos_una_persona4():
-    global b
+    
    
     b = "cuadruples"
+    session["b"] = b
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "cuadruples", 'reducido')
     # Obtener la lista de nombres de archivos en la carpeta
@@ -404,9 +405,10 @@ def disenos_una_persona4():
 
 @app.route('/disenos5personas')
 def disenos_una_persona5():
-    global b
+    
    
     b = "quintuples"
+    session["b"] = b
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "quintuples", 'reducido')
     # Obtener la lista de nombres de archivos en la carpeta
@@ -422,6 +424,7 @@ def disenos_una_persona5():
 
 @app.route('/procesar', methods=['POST'])
 def procesar():
+   
     
     codigouser = session['codigouser']
     
