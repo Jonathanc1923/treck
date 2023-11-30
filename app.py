@@ -444,12 +444,15 @@ def procesar():
     user_ip = codigouser
     # Ordenar las caras por la posición del cuadro delimitador
     faces = sorted(faces, key=lambda x: x['bbox'][0])
-
+    
     # Almacena los datos de los rostros en una lista
     folder_path = os.path.join('uploads', user_ip)
-    file_names = os.listdir(folder_path)
+    # Obtener la lista de nombres de archivos ordenada
+    file_names = sorted(os.listdir(folder_path))
+
+    # Almacena los datos de los rostros en una lista
     faces_data = []
-    
+    faces_data.sort(key=lambda x: x['source_face']['bbox'][0])
     for i, source_face in enumerate(faces):
         bbox = source_face["bbox"]
         bbox = [int(b) for b in bbox]
@@ -468,7 +471,7 @@ def procesar():
             'img_persona_path': img_persona_path
         }
         faces_data.append(current_face_data)
-    faces_data.sort(key=lambda x: x['source_face']['bbox'][0])
+    faces_data.sort(key=lambda x: os.path.basename(x['img_persona_path']))
     
     
     # Procesa los datos almacenados para generar las imágenes finales

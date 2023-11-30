@@ -36,15 +36,16 @@
             border-radius: 8px;
             cursor: pointer;
         }
+
         #uploadForm {
             text-align: center;
             margin-top: 20px;
         }
-        
+
         #imageInput {
             margin-right: 10px;
         }
-        
+
         #uploadForm button {
             background-color: #4CAF50;
             color: white;
@@ -54,11 +55,25 @@
             cursor: pointer;
             border-radius: 4px;
         }
-        
+
         #uploadForm button:hover {
             background-color: #45a049;
         }
-        
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
         .design-button {
             position: absolute;
@@ -116,11 +131,12 @@
 </head>
 <body>
     <h1>ATENCIÓN: Primero: carga 1 cara - Segundo: presiona en subir cara - Tercero: luego selecciona el modelo</h1>
-    <p>Recuerda subir las caras en orden: la primera remplazara el primer rostro del modelo, la segunda remplazará el segundo rostro del modelo, etc - De izquierda a derecha</p>
+    <p>Recuerda subir las caras en orden: la primera remplazará el primer rostro del modelo, la segunda remplazará el segundo rostro del modelo, etc - De izquierda a derecha</p>
 
     <form id="uploadForm" enctype="multipart/form-data">
         <input type="file" id="imageInput" accept=".jpg, .png, .jpeg" />
         <button type="button" onclick="uploadImage()">Subir rostro</button>
+        <div class="loader" id="loader"></div>
     </form>
     <div class="image-container" id="imageContainer"></div>
 
@@ -129,10 +145,13 @@
         function uploadImage() {
             var input = document.getElementById('imageInput');
             var file = input.files[0];
-            
+
             if (file) {
                 var formData = new FormData();
                 formData.append('file', file);
+
+                // Muestra el indicador de carga
+                document.getElementById('loader').style.display = 'inline-block';
 
                 // Puedes usar Fetch API o XMLHttpRequest para enviar la imagen a tu servidor Flask.
                 // Aquí hay un ejemplo usando Fetch:
@@ -145,9 +164,15 @@
                 .then(data => {
                     console.log('Respuesta del servidor:', data);
                     // Puedes manejar la respuesta del servidor aquí
+
+                    // Oculta el indicador de carga después de completar la carga
+                    document.getElementById('loader').style.display = 'none';
                 })
                 .catch(error => {
                     console.error('Error al subir la imagen:', error);
+
+                    // Oculta el indicador de carga en caso de error
+                    document.getElementById('loader').style.display = 'none';
                 });
             } else {
                 console.log('No se seleccionó ninguna imagen.');
@@ -199,7 +224,7 @@
                         document.getElementById("lockScreen").style.display = "none";
                         document.getElementById("gallery").style.display = "flex";
                     } else {
-                        alert("Código no válido. Intente nuevamente o compre mas créditos");
+                        alert("Código no válido. Intente nuevamente o compre más créditos");
                     }
                 })
                 .catch(error => {
