@@ -93,7 +93,9 @@ codigos_validos = {
   'S1CRIW1g': 0, 'tiOh0GkL': 0, 'PoYks6GJ': 0, 'yRQBe1Gj': 0, 'Y87m8qZD': 0,
   'gpCKcWRA': 0, 'XsvAnXeU': 0, 'HyOfzNEM': 0, '0mC6MJq5': 0, 'RKVi6Jpc': 0,
   'qJIW2HVM': 0, 'V1tneUyL': 0, 'bhBInqJv': 0, 'JUCD8w4q': 0, 'zvcGqPJH': 0,
-  'RjtFcpUA': 0, 'YBrnkOHl': 0, 'CGVynMZ4': 0, 'fb5SiQbD': 0, 'cTGw4EMd': 0, "tefiteamo":-1000,}
+  'RjtFcpUA': 0, 'YBrnkOHl': 0, 'CGVynMZ4': 0, 'fb5SiQbD': 0, 'cTGw4EMd': 0, "tefiteamo":-1000,
+  '2L1dnLef': 0, 'kHoUiBed': 0, 'AInuhwpu': 0, 'D77jdrmz': 0, 'gEcRlYlT': 0, 'S7nzKkVJ': 0, 'mXtj7fB3': 0, 'yu63nx8D': 0, 'P0elYQSJ': 0, '786q3bo1': 0, 'StHp2Kk0': 0, 'v42RFd42': 0, 'uKHlRhkx': 0, '0RQM5ygn': 0, 'ZxEFa9Ws': 0, 'tuH6O4Yr': 0, 'NtAL5ZmB': 0, '55MsweXe': 0, 'aIbkRVxs': 0, 'NOBBKeQE': 0, 'FCvW1246': 0, 'TOX3wesC': 0, 'Dfp90bCy': 0, 'DIoWyAmg': 0, 'PAzDfOlS': 0, 'Du4S7DOh': 0, 'ewF4x8tk': 0, '7iSoLWXP': 0, '2rLkvNZA': 0, '3vKxOxrB': 0, 'YjSb2aDe': 0, 'z8G1mBMN': 0, 'MADA7Ri7': 0, 'sBEgWgtQ': 0, 'pLueis4f': 0, 'ODYWWk78': 0, 'Z8kq1TTe': 0, 'BkokVzPj': 0, 'OewffCH7': 0, 'PrzNSwvz': 0, 'pTAICrw6': 0, 'szoyR5Vb': 0, 'T7ZZyK2p': 0, 'M2uE7RXX': 0, 'T7W1qZuA': 0, 'BJqzPiXJ': 0, 'Gs0fFpFb': 0, '7GTNp9GY': 0, 'apohUHP5': 0, 'Y2JgUCUA': 0, 'xhWBRQUu': 0, 'dZWXF1KF': 0, '31Reg4YY': 0, 'KZlVeOF4': 0, '4F7GE9Hz': 0, 'RCVmo5kp': 0, '8ZW1227u': 0, 'xpNv3ND2': 0, 'SiFbjGjf': 0, 'p4pZ57Ht': 0, 'qh55WNbP': 0, 'gpAsNzY7': 0, 'e6lrhFFo': 0, 'y4DM2lfp': 0, 'WKVRh87v': 0, 'DF2WwYiB': 0, 'c6JSzIwT': 0, 'yWwgPUe5': 0, 'S1PdZFmg': 0, 'MuiK6H2l': 0, 'pkqSFtyV': 0, 'C8m9uJ5q': 0, 'GsnICDKX': 0, 'OFmTMwzn': 0, '7Ewh5L1q': 0, 'PwaqszDb': 0, '0YWKtASR': 0, 'JONATm9D': 0, 'Z7n2AfR4': 0, 'cSZL94ee': 0, 'xU0GNfcs': 0, 'xuQaodNx': 0, 'FQFVPEae': 0, 'U8wEg70x': 0, 'z6TREyiD': 0, '9GrlBKeD': 0, 'clkMV3W2': 0, 'S6coUIYQ': 0, 'TLDZfoMy': 0, 'qffNYGOl': 0, 'zlbqsMmI': 0, 'nCGiaWXI': 0, '4yqjxmZf': 0, 'tCQDk6C7': 0, 'TpZlBRaX': 0, 'zrmDjCRK': 0, 'JvQcwsbP': 0, 'ZLBzyMjH': 0, 'A8XIHZMR': 0, 'BOIpiVwz': 0
+  }
 limite_validaciones = 16  # Establece el límite de validaciones permitidas
 
 # Diccionario para almacenar la lista negra de códigos
@@ -181,7 +183,7 @@ def construir_imfondo(imagefilename):
     static_dir = os.path.join('static')
     # Construir la ruta de la imagen de fondo en el directorio 'grandes'
     imfondo_path = os.path.join(static_dir, b, 'grandes', imagefilename)
-    
+    session ["imfondo_path"] = imfondo_path
     # Verificar si el archivo existe
     if not os.path.exists(imfondo_path):
         print(f"El archivo no existe en la ruta: {imfondo_path}")
@@ -274,7 +276,7 @@ def imagen_final():
         result_image = os.path.join(static_dir, latest_file)
         return render_template('imagen_final.html', result_image=result_image_name)
     else:
-        return "Error: No se encontraron imágenes para mostrar"
+        return "No cierres esta página - Recargue esta pagina en 30 segundos, Aún es muy pronto! No se encontraron imágenes para mostrar -  Estamos creando tus diseños!"
     
     
     
@@ -340,6 +342,7 @@ def seleccion_estilo():
 def disenos_una_persona():
     global b
     b = "individuales"
+  
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "individuales", 'reducido')
     # Obtener la lista de nombres de archivos en la carpeta
@@ -353,6 +356,7 @@ def disenos_una_persona():
 @app.route('/disenos2personas')
 def disenos_una_persona2():
     global b
+    
     b = "dobles"
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "dobles", 'reducido')
@@ -367,6 +371,7 @@ def disenos_una_persona2():
 @app.route('/disenos3personas')
 def disenos_una_persona3():
     global b
+  
     b = "triples"
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "triples", 'reducido')
@@ -383,6 +388,7 @@ def disenos_una_persona3():
 @app.route('/disenos4personas')
 def disenos_una_persona4():
     global b
+   
     b = "cuadruples"
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "cuadruples", 'reducido')
@@ -397,6 +403,7 @@ def disenos_una_persona4():
 @app.route('/disenos5personas')
 def disenos_una_persona5():
     global b
+   
     b = "quintuples"
     # Ruta a la carpeta de imágenes para 1 persona
     folder_path = os.path.join('static', "quintuples", 'reducido')
