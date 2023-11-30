@@ -26,7 +26,7 @@ codigouser = None
 
 
 a = 1
-b = ""
+
 
 app.secret_key = secrets.token_hex(16)
 print("insightface", insightface.__version__)
