@@ -130,53 +130,75 @@
     </style>
 </head>
 <body>
-    <h1>ATENCIÓN: Primero: carga 1 cara - Segundo: presiona en subir cara - (repite 5 veces para 5 caras diferentes)  - Tercero: luego selecciona el modelo y espere</h1>
+    <p>Antes de utilizar esta plataforma MIRA EL VIDEO EXPLICATIVO QUE ESTÁ EN LA PÁGINA ANTERIOR</p>
+    <h1>ATENCIÓN: Primero: carga 1 cara - Segundo: presiona en subir cara - Tercero: luego selecciona el modelo</h1>
     <p>Recuerda subir las caras en orden: la primera remplazará el primer rostro del modelo, la segunda remplazará el segundo rostro del modelo, etc - De izquierda a derecha</p>
+    <!-- Primer formulario para cargar imagen de fondo -->
+<form id="fondoForm" enctype="multipart/form-data" method="POST">
+    <input type="file" id="fondoInput" name="fondoInput" accept=".jpg, .png, .jpeg" />
+    <button type="submit">Cargar imagen de fondo</button>
+</form>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="imageInput" accept=".jpg, .png, .jpeg" />
-        <button type="button" onclick="uploadImage()">Subir rostro</button>
-        <div class="loader" id="loader"></div>
-    </form>
+<!-- Segundo formulario para subir rostro -->
+<form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="imageInput" accept=".jpg, .png, .jpeg" />
+    <button type="button" onclick="uploadImage()">Subir rostro</button>
+    <div class="loader" id="loader"></div>
+</form>
     <div class="image-container" id="imageContainer"></div>
+    <div class="loader" id="pageLoader"></div>
 
     <script>
         // JavaScript para manejar la carga de archivos
-        function uploadImage() {
-            var input = document.getElementById('imageInput');
-            var file = input.files[0];
-
-            if (file) {
-                var formData = new FormData();
-                formData.append('file', file);
-
-                // Muestra el indicador de carga
-                document.getElementById('loader').style.display = 'inline-block';
-
-                // Puedes usar Fetch API o XMLHttpRequest para enviar la imagen a tu servidor Flask.
-                // Aquí hay un ejemplo usando Fetch:
-
-                fetch('/select_image', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Respuesta del servidor:', data);
-                    // Puedes manejar la respuesta del servidor aquí
-
-                    // Oculta el indicador de carga después de completar la carga
-                    document.getElementById('loader').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Error al subir la imagen:', error);
-
-                    // Oculta el indicador de carga en caso de error
-                    document.getElementById('loader').style.display = 'none';
-                });
-            } else {
-                console.log('No se seleccionó ninguna imagen.');
-            }
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+    
+            var formData = new FormData(this);
+    
+            // Muestra el indicador de carga
+            document.getElementById('loader').style.display = 'inline-block';
+    
+            // Puedes usar Fetch API o XMLHttpRequest para enviar la imagen a tu servidor Flask.
+            // Aquí hay un ejemplo usando Fetch:
+            fetch('/administrador', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+                // Puedes manejar la respuesta del servidor aquí
+    
+                // Oculta el indicador de carga después de completar la carga
+                document.getElementById('loader').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error al subir la imagen:', error);
+    
+                // Oculta el indicador de carga en caso de error
+                document.getElementById('loader').style.display = 'none';
+            });
+        });
+    
+        // JavaScript para manejar la selección de imágenes en la galería
+        function procesarImagen(imageFilename) {
+            var xhr = new XMLHttpRequest();
+    
+            xhr.open('POST', '{{ url_for('procesar') }}', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+    
+            var data = JSON.stringify({ 'imagefilename': imageFilename });
+    
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log(xhr.responseText);
+                    alert("Nombre del archivo seleccionado: " + imageFilename);
+                } else {
+                    console.error("Error al procesar la imagen:", xhr.statusText);
+                }
+            };
+    
+            xhr.send(data);
         }
     </script>
 
@@ -194,7 +216,7 @@
         {% for imagefilename in image_paths %}
             <div class="image-container">
                 <a href="{{ url_for('index') }}">
-                    <img src="{{ url_for('static', filename='quintuples/reducido/' + imagefilename) }}" alt="Image" onclick="procesarImagen('{{ imagefilename }}')">
+                    <img src="{{ url_for('static', filename='individuales/reducido/' + imagefilename) }}" alt="Image" onclick="procesarImagen('{{ imagefilename }}')">
                 </a>
             </div>
         {% endfor %}
@@ -234,6 +256,7 @@
         }
 
         function procesarImagen(imageFilename) {
+            
             var xhr = new XMLHttpRequest();
         
             xhr.open('POST', '{{ url_for('procesar') }}', true);

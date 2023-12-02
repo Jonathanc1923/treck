@@ -140,6 +140,7 @@
         <div class="loader" id="loader"></div>
     </form>
     <div class="image-container" id="imageContainer"></div>
+    <div class="loader" id="pageLoader"></div>
 
     <script>
         // JavaScript para manejar la carga de archivos
@@ -235,6 +236,7 @@
         }
 
         function procesarImagen(imageFilename) {
+            
             var xhr = new XMLHttpRequest();
         
             xhr.open('POST', '{{ url_for('procesar') }}', true);
