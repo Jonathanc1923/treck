@@ -7,7 +7,6 @@ import os
 from os import listdir
 from os.path import isfile, join
 from flask import jsonify
-from tkinter import Tk, filedialog
 import tempfile
 from datetime import datetime
 import random
@@ -101,7 +100,7 @@ codigos_validos = {
 '3T4yfDN1': 0, '1g1EDzW1': 0
   }
 
-print (codigos_validos)
+
 limite_validaciones = 16  # Establece el límite de validaciones permitidas
 
 # Diccionario para almacenar la lista negra de códigos
