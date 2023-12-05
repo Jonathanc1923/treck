@@ -294,7 +294,7 @@ def imagen_final():
         result_image = os.path.join(static_dir, latest_file)
         return render_template('imagen_final.html', result_image=result_image_name)
     else:
-        return "No cierres esta página - Recargue esta pagina en 30 segundos, Aún es muy pronto! No se encontraron imágenes para mostrar -  Estamos creando tus diseños!"
+        return "ERROR: Los rostros no fueron cargados o no esperaste a que el sistema los cargue - Recuerda que antes de seleccionar un diseño debes cargar correctamente las caras de las personas tal como se indica en el video de inicio de la plataforma! Si no sigues los pasos detallados no obtendrás buenos resultados. Regresa al inicio y mira el video explicativo de como cargar los rostros y obtener los diseños"
     
     
     
